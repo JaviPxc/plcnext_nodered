@@ -215,8 +215,8 @@ install_nodejs() {
 						
 	rm /etc/profile.d/node.sh     &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodejs_installation.log
 	tee -a /etc/profile.d/node.sh &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodejs_installation.log <<EOT
-		#!/bin/sh
-		export PATH="/opt/node/nodejs/bin:/opt/node/node_red/node_modules/pm2/bin/pm2:\$PATH"
+#!/bin/sh
+export PATH="/opt/node/nodejs/bin:/opt/node/node_red/node_modules/pm2/bin/pm2:\$PATH"
 EOT
 	chmod 755 /etc/profile.d/node.sh
 	chown admin:plcnext /etc/profile.d/node.sh
@@ -255,6 +255,40 @@ install_ipkg_tools () {
 	# Files are installed in /opt/bin/, /opt/var/, /opt/share/, /opt/etc/
 	echo -e "\n${YELLOW}-Installing ipkg at: $(date)${ENDCOLOR}" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/ipkg_installation.log
 	echo "- Trying to download and install ipkg package manager, please wait..."
+	wget -O - https://raw.githubusercontent.com/JaviPxc/plcnext_nodered/main/ipkg_install.sh | sh &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/ipkg_installation.log
+	if [ $? -ne 0 ]; then
+		echo -e "    ${RED}${CROSS} There is any problem downloading or installing ipkg.${ENDCOLOR}"
+		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
+		exit -1
+	fi
+	
+	echo -e "    ${GREEN}${CHECK} ipkg was downloaded and installed correctly.${ENDCOLOR}"
+	echo -e "- Trying to add ipkg to the PATH and install gcc, make and python27. Please wait..."
+
+	rm /etc/profile.d/ipkg.sh &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/ipkg_installation.log
+	tee -a /etc/profile.d/ipkg.sh &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/ipkg_installation.log <<EOT
+#!/bin/sh
+export PATH="/opt/bin:/opt/sbin:\$PATH"
+export PYTHON="/opt/bin/python2"
+EOT
+	chmod 755 /etc/profile.d/ipkg.sh
+	chown admin:plcnext /etc/profile.d/ipkg.sh
+	. /etc/profile.d/ipkg.sh
+	
+	echo -e "    ${GREEN}${CHECK} gcc, make, python27 and py27-pip successfully installed.${ENDCOLOR}"
+}
+	
+install_ipkg_tools_old () {
+	echo -e "- Installation WITH SD CARD..."
+	echo -e "    To install OPCUA package, bcrypt package is required."
+	echo -e "    To install bcrypt package, node-gyp package is required."
+	echo -e "    To install node-gyp package, python2.7/python3.5, make and gcc are required, so ipkg is going to be installed."
+	
+	# If there is SD card, PLC has enought space to install ipkg manager and python2.7 
+	# Install ipkg package manager
+	# Files are installed in /opt/bin/, /opt/var/, /opt/share/, /opt/etc/
+	echo -e "\n${YELLOW}-Installing ipkg at: $(date)${ENDCOLOR}" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/ipkg_installation.log
+	echo "- Trying to download and install ipkg package manager, please wait..."
 	wget -O - http://ipkg.nslu2-linux.org/optware-ng/bootstrap/buildroot-armeabihf-bootstrap.sh | sh &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/ipkg_installation.log
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem downloading or installing ipkg.${ENDCOLOR}"
@@ -273,9 +307,9 @@ install_ipkg_tools () {
 
 	rm /etc/profile.d/ipkg.sh &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/ipkg_installation.log
 	tee -a /etc/profile.d/ipkg.sh &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/ipkg_installation.log <<EOT
-		#!/bin/sh
-		export PATH="/opt/bin:/opt/sbin:\$PATH"
-		export PYTHON="/opt/bin/python2"
+#!/bin/sh
+export PATH="/opt/bin:/opt/sbin:\$PATH"
+export PYTHON="/opt/bin/python2"
 EOT
 	chmod 755 /etc/profile.d/ipkg.sh
 	chown admin:plcnext /etc/profile.d/ipkg.sh
