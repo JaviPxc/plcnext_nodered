@@ -31,7 +31,7 @@ instalación debido a posibles nuevas dependecias de ciertas librerías.
 #######################################
 
 - Conectarse al PLCnext por SFTP (por ejemplo, con WinSCP).
-- Copiar el fichero *.sh (nodescript_v3.0.sh) y el contenido del fichero node_instalacion_manual.zip (descomprimido) a /opt/plcnext/
+- Copiar el fichero *.sh (nodescript_v3.0.sh) y el fichero node-v16.1.0-linux-armv7l.tar.gz a /opt/plcnext/
 - En el PLCnext dar al fichero *.sh permisos de ejecución. Dos opciones:
   1. Desde WinSCP > Botón derecho sobre el fichero > Propiedades > Marcar columna 'x'
   2. Desde Putty > Ejecutar comando "chmod 744 /opt/plcnext/nodescript_v3.0.sh"

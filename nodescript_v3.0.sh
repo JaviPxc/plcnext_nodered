@@ -9,69 +9,69 @@ CHECK="\xE2\x9C\x94"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 NODE_INSTALLATION_BASE_DIR="/opt/node"
 NODE_INSTALLATION_LOGS_BASE_DIR="/opt/node/installation_logs"
+NODEJS_VERSION=""
 
-# Check number of parameters end their values
-case $# in
-	1)
-		if [ $1 -ne 2 ]; then
-			echo -e "${GREEN}Script usage:${ENDCOLOR}"	
-			echo -e "  - PLCnext No SD card + Node LATEST: bash nodescript_<version>.sh 0 0"
-			echo -e "  - PLCnext No SD card + Node 16.1.0: bash nodescript_<version>.sh 0 1"
-			echo -e "  - PLCnext & SD card + Node LATEST: bash nodescript_<version>.sh 1 0"
-			echo -e "  - PLCnext & SD card + Node 16.1.0: bash nodescript_<version>.sh 1 1"
-			echo -e "  - Install libatomic: bash nodescript_<version>.sh 2"
-			exit -1
-		fi
-	;;
-	2) 
-		if [ $1 -lt 0 ] || [ $1 -gt 1 ] || [ $2 -lt 0 ] || [ $2 -gt 1 ]; then
-			echo -e "${GREEN}Script usage:${ENDCOLOR}"	
-			echo -e "  - PLCnext No SD card + Node LATEST: bash nodescript_<version>.sh 0 0"
-			echo -e "  - PLCnext No SD card + Node 16.1.0: bash nodescript_<version>.sh 0 1"
-			echo -e "  - PLCnext & SD card + Node LATEST: bash nodescript_<version>.sh 1 0"
-			echo -e "  - PLCnext & SD card + Node 16.1.0: bash nodescript_<version>.sh 1 1"
-			echo -e "  - Install libatomic: bash nodescript_<version>.sh 2"
-			exit -1
-		fi
-	;;
-	*)
-		echo -e "Your command line contains ${RED}$# arguments.${ENDCOLOR}"
-		echo -e "${GREEN}Script usage:${ENDCOLOR}"
-		echo -e "  - PLCnext No SD card + Node LATEST: bash nodescript_<version>.sh 0 0"
-		echo -e "  - PLCnext No SD card + Node 16.1.0: bash nodescript_<version>.sh 0 1"
-		echo -e "  - PLCnext & SD card + Node LATEST: bash nodescript_<version>.sh 1 0"
-		echo -e "  - PLCnext & SD card + Node 16.1.0: bash nodescript_<version>.sh 1 1"
-		echo -e "  - Install libatomic: bash nodescript_<version>.sh 2"
-		exit -1
-	;;
-esac
+#######################################################################################################################
+#######################################################################################################################
 
-
-echo "
-__________.__                         .__         _________                __                 __    
-\______   \  |__   ____   ____   ____ |__|__  ___ \_   ___ \  ____   _____/  |______    _____/  |_  
- |     ___/  |  \ /  _ \_/ __ \ /    \|  \  \/  / /    \  \/ /  _ \ /    \   __\__  \ _/ ___\   __\ 
- |    |   |   Y  (  <_> )  ___/|   |  \  |>    <  \     \___(  <_> )   |  \  |  / __ \\  \___|  |   
- |____|   |___|  /\____/ \___  >___|  /__/__/\_ \  \______  /\____/|___|  /__| (____  /\___  >__|   
-               \/            \/     \/         \/         \/            \/          \/     \/      
-                                          
-                                                                by USA(ychamarelli)/SPAIN(jrivela) "
-echo "NODE-RED Machine build - REVISION 3.0. Included:
-    node-red armv7l latest version with OPC UA, Dashboard and Telegrambot
-"
-
-echo "Disclamer - Warning: All examples listed are meant to showcase potential use cases. 
-Always adhere to best practices and mandatory safety regulations. The end-user is soly 
-responsible for a safe application/implementation of the examples listed - node-red machine builder."
-
-sleep 1s
-
-# Execute this logic before start script execution
-read -r -p "Do you accept the term above and wish to continue the installation (y/n)" response
-acceptConditions=0
-if ! [[ $response =~ ^(yes|y| ) ]] || [[ -z $response ]]; then
+show_usage_menu() {
+	if [ $nargs -ne 1 ] && [ $nargs -ne 2 ]; then
+		echo -e "Your command line contains ${RED}${nargs} arguments.${ENDCOLOR}"
+	fi
+	echo -e "${GREEN}Script usage:${ENDCOLOR}"
+	echo -e "  nodescript_v3.0.sh 0 0  -  PLCnext No SD card + Node LATEST"
+	echo -e "  nodescript_v3.0.sh 0 1  -  PLCnext No SD card + Node v16.1.0"
+	echo -e "  nodescript_v3.0.sh 1 0  -  PLCnext & SD card  + Node LATEST"
+	echo -e "  nodescript_v3.0.sh 1 1  -  PLCnext & SD card  + Node v16.1.0"
+	echo -e "  nodescript_v3.0.sh 2    -  Install libatomic library"
+	echo -e "  nodescript_v3.0.sh 3    -  Generate node-red-contrib-opcua client certificate"
 	exit -1
-fi
+}
+
+#######################################################################################################################
+#######################################################################################################################
+
+show_terms_and_conditions() {
+	echo "
+	__________.__                         .__         _________                __                 __    
+	\______   \  |__   ____   ____   ____ |__|__  ___ \_   ___ \  ____   _____/  |______    _____/  |_  
+	 |     ___/  |  \ /  _ \_/ __ \ /    \|  \  \/  / /    \  \/ /  _ \ /    \   __\__  \ _/ ___\   __\ 
+	 |    |   |   Y  (  <_> )  ___/|   |  \  |>    <  \     \___(  <_> )   |  \  |  / __ \\  \___|  |   
+	 |____|   |___|  /\____/ \___  >___|  /__/__/\_ \  \______  /\____/|___|  /__| (____  /\___  >__|   
+				   \/            \/     \/         \/         \/            \/          \/     \/      
+											  
+																	by USA(ychamarelli)/SPAIN(jrivela) "
+	echo "NODE-RED Machine build - REVISION 3.0. Included:
+		node-red armv7l latest version with OPC UA, Dashboard and Telegrambot
+	"
+
+	echo "Disclamer - Warning: All examples listed are meant to showcase potential use cases. 
+	Always adhere to best practices and mandatory safety regulations. The end-user is soly 
+	responsible for a safe application/implementation of the examples listed - node-red machine builder."
+
+	sleep 1s
+
+	# Execute this logic before start script execution
+	read -r -p "Do you accept the term above and wish to continue the installation (y/n)" response
+	if ! [[ $response =~ ^(yes|y| ) ]] || [[ -z $response ]]; then
+		exit -1
+	fi
+}
+
+#######################################################################################################################
+#######################################################################################################################
+
+show_end_message() {
+	echo ""
+	echo -e "${GREEN}Your node-red machine installation is complete. Your dashboard is ready.${ENDCOLOR}"
+	echo -e "Your Node-Red Dashboard will be avaible at ${GREEN}<PLC_IPAddress>:1880${ENDCOLOR}"
+	echo -e "Installed node version: $(node -v)"
+	echo -e "Installed npm version: $(npm -v)"
+	echo -e "Installed npm global packages: $(npm list -g)"
+
+	echo "For support please subriscribe at https://www.plcnext-community.net"
+	echo "thank you for choosing Phoenix Contact"
+}
 
 #######################################################################################################################
 #######################################################################################################################
@@ -132,6 +132,22 @@ install_libatomic() {
 #######################################################################################################################
 #######################################################################################################################
 
+generate_certificate() {
+	su admin -c "mkdir -p ${NODE_INSTALLATION_LOGS_BASE_DIR}"
+	echo -e "\n${YELLOW}-Generating new node-red-contrib-opcua client selfsigned certificate at: $(date)${ENDCOLOR}" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/opcua_certificate_installation.log
+	echo "- Trying to generate new node-red-contrib-opcua client selfsigned certificate called client_selfsigned_cert_1024.pem, please wait..."
+	su admin -c "openssl req -newkey rsa:1024 -nodes -keyout private_key.pem -x509 -out client_selfsigned_cert_1024.pem"
+	if [ $? -ne 0 ]; then
+		echo -e "    ${RED}${CROSS} There is any problem generating the certificate.${ENDCOLOR}"
+		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and try again."
+		exit -1
+	fi
+	echo -e "    ${GREEN}${CHECK} Selfsigned certificate client_selfsigned_cert_1024.pem generated.${ENDCOLOR}"
+}
+
+#######################################################################################################################
+#######################################################################################################################
+
 check_internet_connection() {
 	# Testing for connection with the internet before execution
 	echo "- Checking PLC internet connection, please wait..."
@@ -151,41 +167,56 @@ check_internet_connection() {
 }
 
 download_nodejs() {
-	# When the script find internet conection it looks for the latest nodejs version. 
-	
-	# ### Latest is not working because libatomic.so.1: cannot open shared object file: No such file or directory		
-	# ### Now, last version working is node-v11.15.0-linux-armv7l.tar
-	nodeVersion=$(wget  --no-check-certificate -qO- https://nodejs.org/dist/latest/ | sed -nE 's|.*>node-(.*)-linux-armv7l\.tar\.gz</a>.*|\1|p')
-	#nodeVersion=$(wget  --no-check-certificate -qO- https://nodejs.org/dist/latest-v11.x/ | sed -nE 's|.*>node-(.*)-linux-armv7l\.tar\.gz</a>.*|\1|p')
-			
-	echo "- Looking for nodejs version: ${nodeVersion}. Trying to download it, please wait..."
-	su admin -c "wget  --no-check-certificate -O ${NODE_INSTALLATION_BASE_DIR}/nodejs.tar.gz https://nodejs.org/dist/latest/node-${nodeVersion}-linux-armv7l.tar.gz" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodejs_installation.log
-	#su admin -c "wget  --no-check-certificate -O ${NODE_INSTALLATION_BASE_DIR}/nodejs.tar.gz https://nodejs.org/dist/latest-v11.x/node-${nodeVersion}-linux-armv7l.tar.gz" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodejs_installation.log
+	# When the script find internet conection it looks for the latest nodejs version. 			
+	echo -e "- Looking for nodejs version: ${NODEJS_VERSION}. Trying to download it, please wait..."
+	su admin -c "wget --no-check-certificate -O ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz https://nodejs.org/dist/latest/node-${NODEJS_VERSION}-linux-armv7l.tar.gz" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	#su admin -c "wget --no-check-certificate -O ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz https://nodejs.org/dist/latest-v11.x/node-${NODEJS_VERSION}-linux-armv7l.tar.gz" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
-		echo -e "    ${RED}${CROSS} File node-${nodeVersion}-linux-armv7l.tar.gz could not be downloaded to ${NODE_INSTALLATION_BASE_DIR}/nodejs.tar.gz.${ENDCOLOR}"
-		echo -e "    Check if the link \"https://nodejs.org/dist/latest/node-${nodeVersion}-linux-armv7l.tar.gz\" exists under https://nodejs.org/dist/"
-		#echo -e "    Check if the link \"https://nodejs.org/dist/latest-v11.x/node-${nodeVersion}-linux-armv7l.tar.gz\" exists under https://nodejs.org/dist/"
+		echo -e "    ${RED}${CROSS} File node-${NODEJS_VERSION}-linux-armv7l.tar.gz could not be downloaded to ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz.${ENDCOLOR}"
+		echo -e "    Check if the link \"https://nodejs.org/dist/latest/node-${NODEJS_VERSION}-linux-armv7l.tar.gz\" exists under https://nodejs.org/dist/"
+		#echo -e "    Check if the link \"https://nodejs.org/dist/latest-v11.x/node-${NODEJS_VERSION}-linux-armv7l.tar.gz\" exists under https://nodejs.org/dist/"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
 		exit -1
 	fi
 	
-	echo -e "    ${GREEN}${CHECK} File node-${nodeVersion}-linux-armv7l.tar.gz downloaded to ${NODE_INSTALLATION_BASE_DIR}/nodejs.tar.gz.${ENDCOLOR}"
+	echo -e "    ${GREEN}${CHECK} File node-${NODEJS_VERSION}-linux-armv7l.tar.gz downloaded to ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz.${ENDCOLOR}"
+}
+
+extract_nodejs() {
+	echo -e "- Looking locally for nodejs version: ${NODEJS_VERSION}, please wait..."
+	ls "${SCRIPT_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	if [ $? -ne 0 ]; then
+		echo -e "    ${RED}${CROSS} Not found file ${SCRIPT_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz${ENDCOLOR}"
+		echo -e "    Copy the file to the appropriate location and restart the installation."
+		exit -1
+	fi
+	
+	echo -e "    ${GREEN}${CHECK} File ${SCRIPT_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz found.${ENDCOLOR}"
+	echo "- Trying to move ${SCRIPT_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz to ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz, please wait..."
+	mv -f "${SCRIPT_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz" "${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	if [ $? -ne 0 ]; then
+		echo -e "    ${RED}${CROSS} There is any problem moving ${SCRIPT_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz to ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz{ENDCOLOR}"
+		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
+		exit -1
+	fi
+	
+	echo -e "    ${GREEN}${CHECK} File moved to ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz${ENDCOLOR}"
 }
 
 install_nodejs() {
 	# Here we prepare unzip the files and move to the nodejs directory
-	echo -e "- Trying to uncompress ${NODE_INSTALLATION_BASE_DIR}/nodejs.tar.gz, please wait..."
+	echo -e "- Trying to uncompress ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz, please wait..."
 
-	su admin -c "tar -xvf ${NODE_INSTALLATION_BASE_DIR}/nodejs.tar.gz -C ${NODE_INSTALLATION_BASE_DIR}" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodejs_installation.log
+	su admin -c "tar -xvf ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz -C ${NODE_INSTALLATION_BASE_DIR}" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
-		echo -e "    ${RED}${CROSS} There is any problem uncompressing file ${NODE_INSTALLATION_BASE_DIR}/nodejs.tar.gz${ENDCOLOR}"
+		echo -e "    ${RED}${CROSS} There is any problem uncompressing file ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz${ENDCOLOR}"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
 		exit -1
 	fi				
 
-	echo -e "    ${GREEN}${CHECK} File ${NODE_INSTALLATION_BASE_DIR}/nodejs.tar.gz uncompressed to ${NODE_INSTALLATION_BASE_DIR}/nodejs.${ENDCOLOR}"
-	echo -e "- Trying to move ${NODE_INSTALLATION_BASE_DIR}/node-${1}-linux-armv7l to ${NODE_INSTALLATION_BASE_DIR}/nodejs, please wait..."
-	mv -f "${NODE_INSTALLATION_BASE_DIR}/node-${1}-linux-armv7l" "${NODE_INSTALLATION_BASE_DIR}/nodejs" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodejs_installation.log
+	echo -e "    ${GREEN}${CHECK} File ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz uncompressed to ${NODE_INSTALLATION_BASE_DIR}/nodejs.${ENDCOLOR}"
+	echo -e "- Trying to move ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l to ${NODE_INSTALLATION_BASE_DIR}/nodejs, please wait..."
+	mv -f "${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l" "${NODE_INSTALLATION_BASE_DIR}/node_red" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem moving the directory to nodejs.${ENDCOLOR}"
@@ -193,30 +224,30 @@ install_nodejs() {
 		exit -1
 	fi	
 
-	echo -e "    ${GREEN}${CHECK} Directory ${NODE_INSTALLATION_BASE_DIR}/node-${1}-linux-armv7l renamed as ${NODE_INSTALLATION_BASE_DIR}/nodejs.${ENDCOLOR}"
-	echo -e "- Trying to remove ${NODE_INSTALLATION_BASE_DIR}/nodejs.tar.gz file, please wait..."
-	rm -rf "${NODE_INSTALLATION_BASE_DIR}/nodejs.tar.gz" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodejs_installation.log
+	echo -e "    ${GREEN}${CHECK} Directory ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l renamed as ${NODE_INSTALLATION_BASE_DIR}/node_red.${ENDCOLOR}"
+	echo -e "- Trying to remove ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz file, please wait..."
+	rm -rf "${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
-		echo -e "    ${RED}${CROSS} There is any problem removing ${NODE_INSTALLATION_BASE_DIR}/nodejs.tar.gz file.${ENDCOLOR}"
+		echo -e "    ${RED}${CROSS} There is any problem removing ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz file.${ENDCOLOR}"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
 		exit -1
 	fi	
 
-	echo -e "    ${GREEN}${CHECK} File ${NODE_INSTALLATION_BASE_DIR}/nodejs.tar.gz was removed.${ENDCOLOR}"
+	echo -e "    ${GREEN}${CHECK} File ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz was removed.${ENDCOLOR}"
 	echo -e "- Trying to config files from nodejs and add npm and node to the PATH, please wait..."
 
-	su admin -c "chmod o+rwx /opt/node/nodejs/bin/npm"  &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodejs_installation.log
-	su admin -c "chmod o+rwx /opt/node/nodejs/bin/node" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodejs_installation.log
-	su admin -c "chmod o+rwx /opt/node/nodejs/bin/npx"  &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodejs_installation.log
-	ln -sfn /opt/node/nodejs/bin/node /usr/bin/node &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodejs_installation.log
-	ln -sfn /opt/node/nodejs/bin/npm  /usr/bin/npm  &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodejs_installation.log
-	chown --reference=/opt/node/nodejs/bin/node /usr/bin/node &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodejs_installation.log
-	chown --reference=/opt/node/nodejs/bin/npm  /usr/bin/npm  &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodejs_installation.log
+	su admin -c "chmod o+rwx ${NODE_INSTALLATION_BASE_DIR}/node_red/bin/npm"  &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	su admin -c "chmod o+rwx ${NODE_INSTALLATION_BASE_DIR}/node_red/bin/node" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	su admin -c "chmod o+rwx ${NODE_INSTALLATION_BASE_DIR}/node_red/bin/npx"  &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	ln -sfn "${NODE_INSTALLATION_BASE_DIR}/node_red/bin/node" /usr/bin/node &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	ln -sfn "${NODE_INSTALLATION_BASE_DIR}/node_red/bin/npm"  /usr/bin/npm  &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	chown "--reference=${NODE_INSTALLATION_BASE_DIR}/node_red/bin/node" /usr/bin/node &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	chown "--reference=${NODE_INSTALLATION_BASE_DIR}/node_red/bin/npm"  /usr/bin/npm  &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 						
-	rm /etc/profile.d/node.sh     &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodejs_installation.log
-	tee -a /etc/profile.d/node.sh &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodejs_installation.log <<EOT
+	rm /etc/profile.d/node.sh     &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	tee -a /etc/profile.d/node.sh &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log <<EOT
 #!/bin/sh
-export PATH="/opt/node/nodejs/bin:/opt/node/node_red/node_modules/pm2/bin/pm2:\$PATH"
+export PATH="/opt/node/node_red/bin:/opt/node/node_red/node_modules/pm2/bin/pm2:\$PATH"
 EOT
 	chmod 755 /etc/profile.d/node.sh
 	chown admin:plcnext /etc/profile.d/node.sh
@@ -225,20 +256,55 @@ EOT
 	echo -e "    ${GREEN}${CHECK} Nodejs environment was installed successfully.${ENDCOLOR}"
 }
 
+update_npm() {
+	echo -e "- Trying to update npm to latest version, please wait..."
+	su admin -c "npm install -g npm@latest" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	if [ $? -ne 0 ]; then
+		echo -e "    ${RED}${CROSS} There is any problem updating npm.${ENDCOLOR}"
+		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
+		exit -1
+	fi
+	
+	echo -e "    ${GREEN}${CHECK} npm updated successfully.${ENDCOLOR}"
+}
+
+check_nodejs_dependencies () {
+	echo -e "- Trying to check if all the libraries required to execute node are available, please wait..."
+	missedLibraries=$(ldd "${NODE_INSTALLATION_BASE_DIR}/node_red/bin/node" | grep "not found" | wc -l)
+	if [ $missedLibraries -gt 0 ]; then
+		ldd "${NODE_INSTALLATION_BASE_DIR}/node_red/bin/node" | grep "not found" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+		echo -e "    ${RED}${CROSS} Some of the libraries required to execute ${NODE_INSTALLATION_BASE_DIR}/node_red/bin/node are missing.${ENDCOLOR}"
+		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
+		exit -1
+	fi
+	
+	echo -e "    ${GREEN}${CHECK} All the libraries required to execute ${NODE_INSTALLATION_BASE_DIR}/node_red/bin/node are available.${ENDCOLOR}"
+}
+
 install_latest_nodejs() {
 	su admin -c "mkdir -p ${NODE_INSTALLATION_LOGS_BASE_DIR}"
-	echo -e "\n${YELLOW}-Installing Nodejs latest at: $(date)${ENDCOLOR}" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodejs_installation.log
+	echo -e "\n${YELLOW}-Installing Nodejs latest at: $(date)${ENDCOLOR}" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	
 	check_internet_connection
+	# ### Latest is not working because libatomic.so.1: cannot open shared object file: No such file or directory		
+	# ### Now, last version working is node-v11.15.0-linux-armv7l.tar
+	#NODEJS_VERSION=$(wget  --no-check-certificate -qO- https://nodejs.org/dist/latest-v11.x/ | sed -nE 's|.*>node-(.*)-linux-armv7l\.tar\.gz</a>.*|\1|p')
+	NODEJS_VERSION=$(wget  --no-check-certificate -qO- https://nodejs.org/dist/latest/ | sed -nE 's|.*>node-(.*)-linux-armv7l\.tar\.gz</a>.*|\1|p')
 	download_nodejs
-	install_nodejs $nodeVersion
+	install_nodejs
+	check_nodejs_dependencies
+	update_npm
 }
 
 install_offline_nodejs() {
 	su admin -c "mkdir -p ${NODE_INSTALLATION_LOGS_BASE_DIR}"
-	echo -e "\n${YELLOW}-Installing Nodejs offline at: $(date)${ENDCOLOR}" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodejs_installation.log
-	extract_nodejs
-	install_nodejs v16.1.0
+	echo -e "\n${YELLOW}-Installing Nodejs offline at: $(date)${ENDCOLOR}" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	
 	check_internet_connection
+	NODEJS_VERSION="v16.1.0"
+	extract_nodejs
+	install_nodejs
+	check_nodejs_dependencies
 }
 
 #######################################################################################################################
@@ -255,12 +321,13 @@ install_ipkg_tools () {
 	# Files are installed in /opt/bin/, /opt/var/, /opt/share/, /opt/etc/
 	echo -e "\n${YELLOW}-Installing ipkg at: $(date)${ENDCOLOR}" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/ipkg_installation.log
 	echo "- Trying to download and install ipkg package manager, please wait..."
-	wget -O - https://raw.githubusercontent.com/JaviPxc/plcnext_nodered/main/ipkg_install.sh | sh &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/ipkg_installation.log
+	wget --no-check-certificate -O - https://raw.githubusercontent.com/JaviPxc/plcnext_nodered/main/ipkg_install.sh | sh &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/ipkg_installation.log
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem downloading or installing ipkg.${ENDCOLOR}"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
 		exit -1
 	fi
+	chown -R --reference=/opt/plcnext /opt/ipkg/   &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/ipkg_installation.log
 	
 	echo -e "    ${GREEN}${CHECK} ipkg was downloaded and installed correctly.${ENDCOLOR}"
 	echo -e "- Trying to add ipkg to the PATH and install gcc, make and python27. Please wait..."
@@ -268,8 +335,8 @@ install_ipkg_tools () {
 	rm /etc/profile.d/ipkg.sh &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/ipkg_installation.log
 	tee -a /etc/profile.d/ipkg.sh &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/ipkg_installation.log <<EOT
 #!/bin/sh
-export PATH="/opt/bin:/opt/sbin:\$PATH"
-export PYTHON="/opt/bin/python2"
+export PATH="/opt/ipkg/bin:/opt/ipkg/sbin:/opt/ipkg/opt/bin/\$PATH"
+export PYTHON="/opt/ipkg/opt/bin/python2"
 EOT
 	chmod 755 /etc/profile.d/ipkg.sh
 	chown admin:plcnext /etc/profile.d/ipkg.sh
@@ -277,7 +344,8 @@ EOT
 	
 	echo -e "    ${GREEN}${CHECK} gcc, make, python27 and py27-pip successfully installed.${ENDCOLOR}"
 }
-	
+
+# Using Github repository this function is never used again
 install_ipkg_tools_old () {
 	echo -e "- Installation WITH SD CARD..."
 	echo -e "    To install OPCUA package, bcrypt package is required."
@@ -354,18 +422,11 @@ install_nodered () {
 	echo -e "- Trying to update npm to latest version, please wait..."
 	cd ${NODE_INSTALLATION_BASE_DIR}/node_red/
 	
-	su admin -c "npm install -g npm@latest" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
-	if [ $? -ne 0 ]; then
-		echo -e "    ${RED}${CROSS} There is any problem updating npm.${ENDCOLOR}"
-		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
-		exit -1
-	fi
-	
 	echo -e "- Trying to download and install Node-red, please wait..."
 	cd ${NODE_INSTALLATION_BASE_DIR}/node_red/
 	#(node-red download)
 	# install packages in /opt/node/node_red/node_modules and /opt/node/node_red/package-lock.json
-	su admin -c "npm install node-red --unsafe-perm" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	su admin -c "npm install -g node-red --unsafe-perm" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem installing node-red.${ENDCOLOR}"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
@@ -380,17 +441,21 @@ install_nodered_basic_packages () {
 	echo -e "- Trying to install node-red-dashboard package, please wait..."
 	cd ${NODE_INSTALLATION_BASE_DIR}/node_red/
 	#(node-red-dashboard download)
-	su admin -c "npm install node-red-dashboard" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	su admin -c "npm install -g node-red-dashboard" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem installing node-red-dashboard package.${ENDCOLOR}"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
 		exit -1
 	fi
 
+	#npm install -g @mapbox/node-pre-gyp
+	#npm install -g node-gyp
+	#npm install -g bcrypt
+
 	echo -e "    ${GREEN}${CHECK} node-red-dashboard successfully installed.${ENDCOLOR}"
 	echo -e "- Trying to install node-red-contrib-opcua package, please wait..."
 	#(node-red-contrib-opcua download)
-	su admin -c "npm install node-red-contrib-opcua" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	su admin -c "npm install -g node-red-contrib-opcua" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	#npm install node-red-contrib-iiot-opcua &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem installing node-red-contrib-opcua package.${ENDCOLOR}"
@@ -407,7 +472,7 @@ install_nodered_extra_packages () {
 	cd ${NODE_INSTALLATION_BASE_DIR}/node_red/
 	
 	#(node-red-contrib-telegrambot download)
-	su admin -c "npm install node-red-contrib-telegrambot" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	su admin -c "npm install -g node-red-contrib-telegrambot" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem installing node-red-contrib-telegrambot package.${ENDCOLOR}"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
@@ -417,7 +482,7 @@ install_nodered_extra_packages () {
 	echo -e "    ${GREEN}${CHECK} node-red-contrib-telegrambot successfully installed.${ENDCOLOR}"
 	echo -e "- Trying to install node-red-contrib-telegrambot-home package, please wait..."
 	#(node-red-contrib-telegrambot-home download)
-	su admin -c "npm install node-red-contrib-telegrambot-home" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	su admin -c "npm install -g node-red-contrib-telegrambot-home" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem installing node-red-contrib-telegrambot-home package.${ENDCOLOR}"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
@@ -427,7 +492,7 @@ install_nodered_extra_packages () {
 	echo -e "    ${GREEN}${CHECK} node-red-contrib-telegrambot-home successfully installed.${ENDCOLOR}"
 	echo -e "- Trying to install node-red-node-email package, please wait..."
 	#(node-red-node-email download)
-	su admin -c "npm install node-red-node-email" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	su admin -c "npm install -g node-red-node-email" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem installing node-red-node-email package.${ENDCOLOR}"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
@@ -437,7 +502,7 @@ install_nodered_extra_packages () {
 	echo -e "    ${GREEN}${CHECK} node-red-node-email successfully installed.${ENDCOLOR}"
 	echo -e "- Trying to install npm-check package, please wait..."
 	#(npm-check download)
-	su admin -c "npm install npm-check" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	su admin -c "npm install -g npm-check" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem installing npm-check package.${ENDCOLOR}"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
@@ -447,7 +512,7 @@ install_nodered_extra_packages () {
 	echo -e "    ${GREEN}${CHECK} npm-check successfully installed.${ENDCOLOR}"
 	echo -e "- Trying to install pm2 package, please wait..."
 	#(pm2 download)
-	su admin -c "npm install pm2" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	su admin -c "npm install -g pm2" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem installing pm2 package.${ENDCOLOR}"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
@@ -456,22 +521,25 @@ install_nodered_extra_packages () {
 
 	echo -e "    ${GREEN}${CHECK} pm2 successfully installed.${ENDCOLOR}"
 	echo -e "- Trying to configure pm2 to auto boot node-red, please wait..."
-	ln -sfn /opt/node/node_red/node_modules/pm2/bin/pm2 /usr/bin/pm2 &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
-	chown --reference=/opt/node/node_red/node_modules/pm2/bin/pm2 /usr/bin/pm2 &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
-				
-	su admin -c "pm2 start /opt/node/node_red/node_modules/node-red/red.js"  &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	unlink /usr/bin/pm2
+	ln -sfn /opt/node/node_red/lib/node_modules/pm2/bin/pm2 /usr/bin/pm2 &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	chown --reference=/opt/node/node_red/lib/node_modules/pm2/bin/pm2 /usr/bin/pm2 &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	
+	pm2 delete red
+	pm2 delete nodered
+	pm2 start /opt/node/node_red/node_modules/node-red/red.js --name nodered  &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem starting node with pm2.${ENDCOLOR}"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
 		exit -1
 	fi
-	su admin -c "pm2 save"  &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	pm2 save  --force &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem saving starting node with pm2.${ENDCOLOR}"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
 		exit -1
 	fi
-	su admin -c "pm2 startup"  &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	pm2 startup  &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem starting up node with pm2.${ENDCOLOR}"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
@@ -500,74 +568,72 @@ install_full_nodered () {
 #######################################################################################################################
 #######################################################################################################################
 
-case $1 in
-	0)
-		case $2 in
-			0) #PLCnext No SD card + Node LATEST
-				install_latest_nodejs
+# Main program
+nargs=$#
+case $# in
+	1) # Script is called with one parameter
+		case $1 in
+			2) #Install libatomic
+				show_terms_and_conditions
+				install_libatomic
 			;;
-			1) #PLCnext No SD card + Node 16.1.0
-				#install_offline_nodejs
+			3) #Generate new node-red-contrib-opcua client selfsigned certificate
+				show_terms_and_conditions
+				generate_certificate
 			;;
 			*)
-				echo -e "Invalid second parameter value."
-				exit -1
+				show_usage_menu
 			;;
 		esac
 	;;
-	1)
-		case $2 in
-			0) #PLCnext & SD card + Node LATEST
-				install_latest_nodejs
-				install_ipkg_tools
-				install_full_nodered
+	2) # Script is called with two parameters
+		case $1 in
+			0)
+				case $2 in
+					0) #PLCnext No SD card + Node LATEST
+						show_terms_and_conditions
+						install_latest_nodejs
+						install_basic_nodered
+						show_end_message
+					;;
+					1) #PLCnext No SD card + Node 16.1.0
+						show_terms_and_conditions
+						install_offline_nodejs
+						install_basic_nodered
+						show_end_message
+					;;
+					*)
+						show_usage_menu
+					;;
+				esac
 			;;
-			1) #PLCnext & SD card + Node 16.1.0
-				#install_offline_nodejs
-				install_ipkg_tools
-				install_full_nodered
+			1)
+				case $2 in
+					0) #PLCnext & SD card + Node LATEST
+						show_terms_and_conditions
+						install_latest_nodejs
+						install_ipkg_tools
+						install_full_nodered
+						show_end_message
+					;;
+					1) #PLCnext & SD card + Node 16.1.0
+						show_terms_and_conditions
+						install_offline_nodejs
+						install_ipkg_tools
+						install_full_nodered
+						show_end_message
+					;;
+					*)
+						show_usage_menu
+					;;
+				esac
 			;;
 			*)
-				echo -e "Invalid second parameter value."
-				exit -1
+				show_usage_menu
 			;;
 		esac
-	;;
-	2) #Install libatomic
-		install_libatomic
 	;;
 	*)
-		echo -e "Invalid first parameter value."
-		exit -1
+		show_usage_menu
 	;;
 esac
-
-
-
-exit
-					
-# IF the installation is made with SD card. Install gcc, make and python2 tools (used to install bcrypt)
-if [ $1 -eq 1 ]; then
-
-
-
-# IF the installation is made with SD card. Install more packages
-if [ $1 -eq 1 ]; then						
-
-						
-elif [ $1 -eq 0 ]; then
-	#(node-red-contrib-opcua download)
-	echo -e "Downloading and installing node-red-contrib-opcua please wait..."
-	#npm install -g node-red-contrib-opcua@0.2.47 --unsafe-perm &> /home/root/node_logs/install_contrib-opcua_errors.log
-	echo -e "node-red-contrib-opcua installed."
-fi
-
-echo -e "${GREEN}Your node-red machine installation is complete. Your dashboard is ready.${ENDCOLOR}"
-echo -e "Your Node-Red Dashboard will be avaible at ${GREEN}<PLC_IPAddress>:1880${ENDCOLOR}"
-echo -e "Installed node version: $(node -v)"
-echo -e "Installed npm version: $(npm -v)"
-
-echo "For support please subriscribe at https://www.plcnext-community.net"
-echo "thank you for choosing Phoenix Contact"+
-
-npm-check
