@@ -214,12 +214,12 @@ install_nodejs() {
 		exit -1
 	fi				
 
-	echo -e "    ${GREEN}${CHECK} File ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz uncompressed to ${NODE_INSTALLATION_BASE_DIR}/nodejs.${ENDCOLOR}"
-	echo -e "- Trying to move ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l to ${NODE_INSTALLATION_BASE_DIR}/nodejs, please wait..."
+	echo -e "    ${GREEN}${CHECK} File ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz uncompressed to ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.${ENDCOLOR}"
+	echo -e "- Trying to move ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l to ${NODE_INSTALLATION_BASE_DIR}/node_red, please wait..."
 	mv -f "${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l" "${NODE_INSTALLATION_BASE_DIR}/node_red" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	
 	if [ $? -ne 0 ]; then
-		echo -e "    ${RED}${CROSS} There is any problem moving the directory to nodejs.${ENDCOLOR}"
+		echo -e "    ${RED}${CROSS} There is any problem moving the directory to node_red.${ENDCOLOR}"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
 		exit -1
 	fi	
@@ -419,11 +419,7 @@ EOT
 #######################################################################################################################
 
 install_nodered () {
-	echo -e "- Trying to update npm to latest version, please wait..."
-	cd ${NODE_INSTALLATION_BASE_DIR}/node_red/
-	
 	echo -e "- Trying to download and install Node-red, please wait..."
-	cd ${NODE_INSTALLATION_BASE_DIR}/node_red/
 	#(node-red download)
 	# install packages in /opt/node/node_red/node_modules and /opt/node/node_red/package-lock.json
 	su admin -c "npm install -g node-red --unsafe-perm" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
@@ -433,13 +429,11 @@ install_nodered () {
 		exit -1
 	fi
 
-	cd -
 	echo -e "    ${GREEN}${CHECK} Node-red successfully installed.${ENDCOLOR}"
 }
 
 install_nodered_basic_packages () {
 	echo -e "- Trying to install node-red-dashboard package, please wait..."
-	cd ${NODE_INSTALLATION_BASE_DIR}/node_red/
 	#(node-red-dashboard download)
 	su admin -c "npm install -g node-red-dashboard" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
@@ -463,13 +457,11 @@ install_nodered_basic_packages () {
 		exit -1
 	fi
 
-	cd -
 	echo -e "    ${GREEN}${CHECK} node-red-contrib-opcua successfully installed.${ENDCOLOR}"
 }
 
 install_nodered_extra_packages () {
 	echo -e "- Trying to install node-red-contrib-telegrambot package, please wait..."
-	cd ${NODE_INSTALLATION_BASE_DIR}/node_red/
 	
 	#(node-red-contrib-telegrambot download)
 	su admin -c "npm install -g node-red-contrib-telegrambot" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
@@ -525,9 +517,7 @@ install_nodered_extra_packages () {
 	ln -sfn /opt/node/node_red/lib/node_modules/pm2/bin/pm2 /usr/bin/pm2 &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	chown --reference=/opt/node/node_red/lib/node_modules/pm2/bin/pm2 /usr/bin/pm2 &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	
-	pm2 delete red
-	pm2 delete nodered
-	pm2 start /opt/node/node_red/node_modules/node-red/red.js --name nodered  &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	pm2 start /opt/node/node_red/lib/node_modules/node-red/red.js --name nodered  &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem starting node with pm2.${ENDCOLOR}"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
@@ -546,7 +536,6 @@ install_nodered_extra_packages () {
 		exit -1
 	fi
 	
-	cd -
 	echo -e "    ${GREEN}${CHECK} pm2 auto boot successfully configured.${ENDCOLOR}"
 }
 
