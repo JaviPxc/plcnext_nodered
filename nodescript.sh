@@ -19,12 +19,12 @@ show_usage_menu() {
 		echo -e "Your command line contains ${RED}${nargs} arguments.${ENDCOLOR}"
 	fi
 	echo -e "${GREEN}Script usage:${ENDCOLOR}"
-	echo -e "  nodescript_v3.0.sh 0 0  -  PLCnext No SD card + Node LATEST"
-	echo -e "  nodescript_v3.0.sh 0 1  -  PLCnext No SD card + Node v16.1.0"
-	echo -e "  nodescript_v3.0.sh 1 0  -  PLCnext & SD card  + Node LATEST"
-	echo -e "  nodescript_v3.0.sh 1 1  -  PLCnext & SD card  + Node v16.1.0"
-	echo -e "  nodescript_v3.0.sh 2    -  Install libatomic library"
-	echo -e "  nodescript_v3.0.sh 3    -  Generate node-red-contrib-opcua client certificate"
+	echo -e "  nodescript.sh 0 0  -  PLCnext No SD card + Node LATEST"
+	echo -e "  nodescript.sh 0 1  -  PLCnext No SD card + Node v16.1.0"
+	echo -e "  nodescript.sh 1 0  -  PLCnext & SD card  + Node LATEST"
+	echo -e "  nodescript.sh 1 1  -  PLCnext & SD card  + Node v16.1.0"
+	echo -e "  nodescript.sh 2    -  Install libatomic library"
+	echo -e "  nodescript.sh 3    -  Generate node-red-contrib-opcua client certificate"
 	exit -1
 }
 
