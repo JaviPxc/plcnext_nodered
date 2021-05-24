@@ -1,41 +1,22 @@
-Skip to content
-Search or jump to…
-
-Pull requests
-Issues
-Marketplace
-Explore
- 
-@JaviPxc 
-JaviPxc
-/
-plcnext_nodered
-1
-00
-Code
-Issues
-Pull requests
-Actions
-Projects
-Wiki
-Security
-Insights
-Settings
-plcnext_nodered/Instrucciones de instalacion.txt
-@JaviPxc
-JaviPxc Add files via upload
-Latest commit 5cd4171 4 days ago
- History
- 1 contributor
-45 lines (37 sloc)  2.57 KB
-  
 ###################
 ## PASOS PREVIOS ##
 ###################
 
 1. Tener instalado en el PC un cliente SFTP. Por ejemplo, WinSCP.
 2. Tener instalado en el PC un cliente SSH. Por ejemplo, Putty.
+3. Tener el PLCnext conectado a internet.
+4. Haber creado en el PLCnext un usuario root. https://www.plcnext.help/te/Operating_System/Root_rights.htm#Setting_a_root_user_password
 
+####################
+## DESCARGA Y USO ##
+####################
+
+1. Descargar los ficheros del repositorio al PC. Disponibles en: https://github.com/JaviPxc/plcnext_nodered/archive/refs/heads/main.zip
+2. Descomprimir el fichero zip descargado.
+3. El script principal es nodescript_v3.0.sh. Básicamente permite diferenciar entre una instalación de Nodered para:
+   * PLCnext con o sin tarjeta SD.
+   * Descarga de la última versión de Nodejs o de una versión concreta dada por el usuario. 
+4. En función del tipo de instalación que desee realizar, deberá seguir los pasos correspondientes descritos a continuación.
 
 #######################################
 ## INSTALACION ULTIMA VERSION NODEJS ##
@@ -44,6 +25,7 @@ Latest commit 5cd4171 4 days ago
 OJO!: Instalar la última versión puede conllevar errores no controlados en el procedimiento de 
 instalación debido a posibles nuevas dependecias de ciertas librerías.
 
+1. Haber descargado el contenido del repositorio (punto anterior).
 - Conectarse al PLCnext por SFTP (por ejemplo, con WinSCP).
 - Copiar solamente el fichero *.sh (nodescript_v3.0.sh) a /opt/plcnext/
 - En el PLCnext dar al fichero *.sh permisos de ejecución. Dos opciones:
