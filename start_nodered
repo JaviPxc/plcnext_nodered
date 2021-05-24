@@ -1,0 +1,69 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          node-red
+# Required-Start:    $local_fs $remote_fs $network
+# Required-Stop:     $local_fs $remote_fs $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 6
+# Short-Description: Start or stop the node-red server
+### END INIT INFO
+
+# Script to start node-red with PLCnext from Phoenix Contact using init.d 
+# Execute these commands:
+# sudo chmod 755 start_nodered
+# sudo update-rc.d start_nodered defaults 99
+
+USER=root
+USER_DIR='/opt/node/.node-red'
+PATH=/usr/bin:/usr/sbin:/opt/node/node_red/bin 
+
+NAME=node-red
+DAEMON=/opt/node/node_red/bin/node-red
+OPTIONS="--max-old-space-size=128"
+
+if [ -n "$USER_DIR" ];  then
+	OPTIONS="$OPTIONS --userDir=$USER_DIR"
+fi
+
+LOG='/var/log/node-red.log'
+
+PIDFILE=/var/run/node-red.pid
+
+. /etc/init.d/functions
+
+start_daemon () {
+        start-stop-daemon --start --background \
+        --chuid $USER --name $NAME \
+                $START_STOP_OPTIONS --make-pidfile --pidfile $PIDFILE \
+        --startas /bin/sh -- -c "$DAEMON $OPTIONS >> $LOG 2>&1"
+	echo "Logging to "$LOG
+}
+
+case "$1" in
+        start)
+             echo "Starting daemon" "$NAME"
+             start_daemon
+        ;;
+        stop)
+             echo "Stopping daemon" "$NAME"
+             start-stop-daemon --stop \
+             --user $USER \
+             --name $NAME --pidfile $PIDFILE --retry 30 \
+             --oknodo
+        ;;
+        restart)
+	     $0 stop
+	     sleep 5
+	     $0 start
+	;;
+	
+	status)
+             status "$DAEMON" "$NAME"
+             exit $?
+        ;;
+
+        *)
+             echo "Usage: $0 {start|stop|restart}"
+             exit 1
+esac
+exit 0
