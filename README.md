@@ -21,7 +21,7 @@ instalación debido a posibles nuevas dependecias de ciertas librerías.
 
 1. Haber descargado el contenido del repositorio (punto anterior).
 2. Conectarse al PLCnext por SFTP (por ejemplo, con WinSCP).
-3. Copiar solamente el fichero _nodescript.sh_ a _/opt/plcnext/_
+3. Copiar los ficheros _nodescript.sh_ y _start_nodered_ a _/opt/plcnext/_
 4. En el PLCnext dar al fichero _nodescript.sh permisos de ejecución_. Dos opciones:
    - Desde WinSCP > Botón derecho sobre el fichero > Propiedades > Marcar columna 'x'
    - Desde Putty > Ejecutar comando ```chmod 744 /opt/plcnext/nodescript.sh```
@@ -36,7 +36,7 @@ instalación debido a posibles nuevas dependecias de ciertas librerías.
 ## INSTALACION VERSION NODEJS ESPECIFICA
 1. Haber descargado el contenido del repositorio (punto anterior).
 2. Conectarse al PLCnext por SFTP (por ejemplo, con WinSCP).
-3. Copiar el fichero _nodescript.sh_ a _/opt/plcnext/_
+3. Copiar los ficheros _nodescript.sh_ y _start_nodered_ a _/opt/plcnext/_
 4. En el PLCnext dar al fichero _nodescript.sh permisos de ejecución_. Dos opciones:
    - Desde WinSCP > Botón derecho sobre el fichero > Propiedades > Marcar columna 'x'
    - Desde Putty > Ejecutar comando ```chmod 744 /opt/plcnext/nodescript.sh```
