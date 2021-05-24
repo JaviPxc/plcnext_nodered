@@ -193,7 +193,7 @@ extract_nodejs() {
 	
 	echo -e "    ${GREEN}${CHECK} File ${SCRIPT_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz found.${ENDCOLOR}"
 	echo "- Trying to move ${SCRIPT_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz to ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz, please wait..."
-	mv -f "${SCRIPT_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz" "${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	mv "${SCRIPT_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz" "${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem moving ${SCRIPT_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz to ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz{ENDCOLOR}"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
@@ -216,7 +216,7 @@ install_nodejs() {
 
 	echo -e "    ${GREEN}${CHECK} File ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.tar.gz uncompressed to ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l.${ENDCOLOR}"
 	echo -e "- Trying to move ${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l to ${NODE_INSTALLATION_BASE_DIR}/node_red, please wait..."
-	mv -f "${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l" "${NODE_INSTALLATION_BASE_DIR}/node_red" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	mv "${NODE_INSTALLATION_BASE_DIR}/node-${NODEJS_VERSION}-linux-armv7l" "${NODE_INSTALLATION_BASE_DIR}/node_red" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem moving the directory to node_red.${ENDCOLOR}"
@@ -301,7 +301,7 @@ install_offline_nodejs() {
 	echo -e "\n${YELLOW}-Installing Nodejs offline at: $(date)${ENDCOLOR}" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	
 	check_internet_connection
-	NODEJS_VERSION="v16.1.0"
+	NODEJS_VERSION=$(ls node*tar.gz | sed -nE 's|node-(.*)-linux-armv7l\.tar\.gz|\1|p')
 	extract_nodejs
 	install_nodejs
 	check_nodejs_dependencies
@@ -311,13 +311,12 @@ install_offline_nodejs() {
 #######################################################################################################################
 
 install_ipkg_tools () {
-	echo -e "- Installation WITH SD CARD..."
-	echo -e "    To install OPCUA package, bcrypt package is required."
-	echo -e "    To install bcrypt package, node-gyp package is required."
-	echo -e "    To install node-gyp package, python2.7/python3.5, make and gcc are required, so ipkg is going to be installed."
+	#To install OPCUA package, bcrypt package is required.
+	#To install bcrypt package, node-gyp package is required.
+	#To install node-gyp package, python2.7/python3.5, make and gcc are required, so ipkg is going to be installed.
 	
 	# If there is SD card, PLC has enought space to install ipkg manager and python2.7 
-	# Install ipkg package manager
+	# Install ipkg package manager in /opt/ipkg/ folder
 	# Files are installed in /opt/bin/, /opt/var/, /opt/share/, /opt/etc/
 	echo -e "\n${YELLOW}-Installing ipkg at: $(date)${ENDCOLOR}" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/ipkg_installation.log
 	echo "- Trying to download and install ipkg package manager, please wait..."
@@ -330,7 +329,7 @@ install_ipkg_tools () {
 	chown -R --reference=/opt/plcnext /opt/ipkg/   &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/ipkg_installation.log
 	
 	echo -e "    ${GREEN}${CHECK} ipkg was downloaded and installed correctly.${ENDCOLOR}"
-	echo -e "- Trying to add ipkg to the PATH and install gcc, make and python27. Please wait..."
+	echo -e "- Trying to add ipkg to the PATH and install gcc, make, python27 and py27-pip. Please wait..."
 
 	rm /etc/profile.d/ipkg.sh &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/ipkg_installation.log
 	tee -a /etc/profile.d/ipkg.sh &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/ipkg_installation.log <<EOT
@@ -433,20 +432,6 @@ install_nodered () {
 }
 
 install_nodered_basic_packages () {
-	echo -e "- Trying to install node-red-dashboard package, please wait..."
-	#(node-red-dashboard download)
-	su admin -c "npm install -g node-red-dashboard" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
-	if [ $? -ne 0 ]; then
-		echo -e "    ${RED}${CROSS} There is any problem installing node-red-dashboard package.${ENDCOLOR}"
-		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
-		exit -1
-	fi
-
-	#npm install -g @mapbox/node-pre-gyp
-	#npm install -g node-gyp
-	#npm install -g bcrypt
-
-	echo -e "    ${GREEN}${CHECK} node-red-dashboard successfully installed.${ENDCOLOR}"
 	echo -e "- Trying to install node-red-contrib-opcua package, please wait..."
 	#(node-red-contrib-opcua download)
 	su admin -c "npm install -g node-red-contrib-opcua" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
@@ -461,8 +446,21 @@ install_nodered_basic_packages () {
 }
 
 install_nodered_extra_packages () {
+	echo -e "- Trying to install node-red-dashboard package, please wait..."
+	#(node-red-dashboard download)
+	su admin -c "npm install -g node-red-dashboard" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	if [ $? -ne 0 ]; then
+		echo -e "    ${RED}${CROSS} There is any problem installing node-red-dashboard package.${ENDCOLOR}"
+		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
+		exit -1
+	fi
+
+	#npm install -g @mapbox/node-pre-gyp
+	#npm install -g node-gyp
+	#npm install -g bcrypt
+
+	echo -e "    ${GREEN}${CHECK} node-red-dashboard successfully installed.${ENDCOLOR}"
 	echo -e "- Trying to install node-red-contrib-telegrambot package, please wait..."
-	
 	#(node-red-contrib-telegrambot download)
 	su admin -c "npm install -g node-red-contrib-telegrambot" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
@@ -502,6 +500,27 @@ install_nodered_extra_packages () {
 	fi
 
 	echo -e "    ${GREEN}${CHECK} npm-check successfully installed.${ENDCOLOR}"
+}
+
+install_nodered_basic () {
+	su admin -c "mkdir -p ${NODE_INSTALLATION_BASE_DIR}/node_red/" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	echo -e "\n${YELLOW}-Installing Node-red at: $(date)${ENDCOLOR}" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	install_nodered
+	install_nodered_basic_packages
+}
+
+install__nodered_full () {
+	su admin -c "mkdir -p ${NODE_INSTALLATION_BASE_DIR}/node_red/" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	echo -e "\n${YELLOW}-Installing Node-red at: $(date)${ENDCOLOR}" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	install_nodered
+	install_nodered_basic_packages
+	install_nodered_extra_packages
+}
+
+#######################################################################################################################
+#######################################################################################################################
+
+nodered_autoboot_pm2_package() {
 	echo -e "- Trying to install pm2 package, please wait..."
 	#(pm2 download)
 	su admin -c "npm install -g pm2" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
@@ -517,13 +536,13 @@ install_nodered_extra_packages () {
 	ln -sfn /opt/node/node_red/lib/node_modules/pm2/bin/pm2 /usr/bin/pm2 &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	chown --reference=/opt/node/node_red/lib/node_modules/pm2/bin/pm2 /usr/bin/pm2 &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	
-	pm2 start /opt/node/node_red/lib/node_modules/node-red/red.js --name nodered  &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	pm2 start /opt/node/node_red/lib/node_modules/node-red/red.js &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem starting node with pm2.${ENDCOLOR}"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
 		exit -1
 	fi
-	pm2 save  --force &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	pm2 save --force &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
 	if [ $? -ne 0 ]; then
 		echo -e "    ${RED}${CROSS} There is any problem saving starting node with pm2.${ENDCOLOR}"
 		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
@@ -536,22 +555,47 @@ install_nodered_extra_packages () {
 		exit -1
 	fi
 	
-	echo -e "    ${GREEN}${CHECK} pm2 auto boot successfully configured.${ENDCOLOR}"
+	echo -e "    ${GREEN}${CHECK} pm2 autoboot successfully configured.${ENDCOLOR}"
 }
 
-install_basic_nodered () {
-	su admin -c "mkdir -p ${NODE_INSTALLATION_BASE_DIR}/node_red/" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
-	echo -e "\n${YELLOW}-Installing Node-red at: $(date)${ENDCOLOR}" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
-	install_nodered
-	install_nodered_basic_packages
-}
-
-install_full_nodered () {
-	su admin -c "mkdir -p ${NODE_INSTALLATION_BASE_DIR}/node_red/" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
-	echo -e "\n${YELLOW}-Installing Node-red at: $(date)${ENDCOLOR}" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
-	install_nodered
-	install_nodered_basic_packages
-	install_nodered_extra_packages
+nodered_autoboot_initd_script() {
+	su admin -c "mkdir -p ${NODE_INSTALLATION_LOGS_BASE_DIR}"
+	echo -e "\n${YELLOW}-Installing autoboot init.d script at: $(date)${ENDCOLOR}" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	echo "- Trying to install autoboot initd script in /etc/init.d/, please wait..."
+	ls "${SCRIPT_DIR}/start_nodered" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	if [ $? -ne 0 ]; then
+		echo -e "    ${RED}${CROSS} Not found file ${SCRIPT_DIR}/start_nodered ${ENDCOLOR}"
+		echo -e "    Copy the file to the appropriate location and restart the installation."
+		exit -1
+	fi
+	
+	echo -e "    ${GREEN}${CHECK} File ${SCRIPT_DIR}/start_nodered found.${ENDCOLOR}"
+	echo "- Trying to move ${SCRIPT_DIR}/start_nodered script to /etc/init.d/, please wait..."
+	mv -f "${SCRIPT_DIR}/start_nodered" "/etc/init.d/" &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	if [ $? -ne 0 ]; then
+		echo -e "    ${RED}${CROSS} There is any problem moving ${SCRIPT_DIR}/start_nodered to /etc/init.d/${ENDCOLOR}"
+		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
+		exit -1
+	fi
+	
+	echo -e "    ${GREEN}${CHECK} ${SCRIPT_DIR}/start_nodered script moved to /etc/init.d/${ENDCOLOR}"
+	echo "- Trying to assign the right permissions to the file /etc/init.d/start_nodered, please wait..."
+    chmod 755 /etc/init.d/start_nodered &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	if [ $? -ne 0 ]; then
+		echo -e "    ${RED}${CROSS} There is any problem assigning permissions to the file /etc/init.d/start_nodered${ENDCOLOR}"
+		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
+		exit -1
+	fi
+	
+	echo -e "    ${GREEN}${CHECK} Right permissions assigned.${ENDCOLOR}"
+	echo "- Trying to include the script as autoboot, please wait..."
+	update-rc.d start_nodered defaults 99 &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	if [ $? -ne 0 ]; then
+		echo -e "    ${RED}${CROSS} There is any problem including /etc/init.d/start_nodered as autoboot.${ENDCOLOR}"
+		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/ and restart the installation."
+		exit -1
+	fi
+	echo -e "    ${GREEN}${CHECK} autoboot initd script successfully configured.${ENDCOLOR}"
 }
 
 #######################################################################################################################
@@ -559,6 +603,12 @@ install_full_nodered () {
 
 # Main program
 nargs=$#
+
+if [ "$EUID" -ne 0 ]
+  then echo "Please, the script should be run as root user"
+  exit -1
+fi
+
 case $# in
 	1) # Script is called with one parameter
 		case $1 in
@@ -582,13 +632,15 @@ case $# in
 					0) #PLCnext No SD card + Node LATEST
 						show_terms_and_conditions
 						install_latest_nodejs
-						install_basic_nodered
+						install_nodered_basic
+						nodered_autoboot_initd_script
 						show_end_message
 					;;
 					1) #PLCnext No SD card + Node 16.1.0
 						show_terms_and_conditions
 						install_offline_nodejs
-						install_basic_nodered
+						install_nodered_basic
+						nodered_autoboot_initd_script
 						show_end_message
 					;;
 					*)
@@ -602,14 +654,16 @@ case $# in
 						show_terms_and_conditions
 						install_latest_nodejs
 						install_ipkg_tools
-						install_full_nodered
+						install__nodered_full
+						nodered_autoboot_initd_script
 						show_end_message
 					;;
 					1) #PLCnext & SD card + Node 16.1.0
 						show_terms_and_conditions
 						install_offline_nodejs
 						install_ipkg_tools
-						install_full_nodered
+						install__nodered_full
+						nodered_autoboot_initd_script
 						show_end_message
 					;;
 					*)
