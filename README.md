@@ -1,9 +1,9 @@
 
 # PASOS PREVIOS
-1. Tener instalado en el PC un __cliente SFTP__. Por ejemplo, WinSCP.
-2. Tener instalado en el PC un __cliente SSH__. Por ejemplo, Putty.
+1. Tener instalado en el PC un __cliente SFTP__. Por ejemplo, [WinSCP](https://winscp.net/eng/download.php).
+2. Tener instalado en el PC un __cliente SSH__. Por ejemplo, [Putty](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html).
 3. Tener el __PLCnext conectado a internet__.
-4. Haber creado en el __PLCnext un usuario root__. https://www.plcnext.help/te/Operating_System/Root_rights.htm#Setting_a_root_user_password
+4. Haber creado en el __PLCnext un usuario root__. [Setting_a_root_user_password](https://www.plcnext.help/te/Operating_System/Root_rights.htm#Setting_a_root_user_password)
 
 
 # DESCARGA Y USO
@@ -53,11 +53,10 @@ instalación debido a posibles nuevas dependecias de ciertas librerías.
 ## INSTALACION LIBRERIA 'LIBATOMIC' REQUERIDA POR npm
 1. Haber descargado el contenido del repositorio (punto anterior).
 2. Conectarse al PLCnext por SFTP (por ejemplo, con WinSCP).
-3. Copiar el fichero _nodescript.sh_ a _/opt/plcnext/_
+3. Copiar los ficheros _nodescript.sh_ y _libatomic.zip_ a _/opt/plcnext/_
 4. En el PLCnext dar al fichero _nodescript.sh permisos de ejecución_. Dos opciones:
    - Desde WinSCP > Botón derecho sobre el fichero > Propiedades > Marcar columna 'x'
    - Desde Putty > Ejecutar comando ```chmod 744 /opt/plcnext/nodescript.sh```
-5. Copiar el fichero _libatomic.zip_ a _/opt/plcnext/_.
 5. Conectarse al PLCnext por SSH como admin (por ejemplo, con Putty).
 6. Cambiar al usuario root. Para ello, ejecutar el comando ```su``` (necesario haberlo creado previamente).
 7. Ejecutar el comando ```cd /opt/plcnext/``` y luego ```./nodescript.sh```. 
@@ -73,7 +72,6 @@ instalación debido a posibles nuevas dependecias de ciertas librerías.
 4. En el PLCnext dar al fichero _nodescript.sh permisos de ejecución_. Dos opciones:
    - Desde WinSCP > Botón derecho sobre el fichero > Propiedades > Marcar columna 'x'
    - Desde Putty > Ejecutar comando ```chmod 744 /opt/plcnext/nodescript.sh```
-5. Copiar el fichero _libatomic.zip_ a _/opt/plcnext/_.
 5. Conectarse al PLCnext por SSH como admin (por ejemplo, con Putty).
 6. Cambiar al usuario root. Para ello, ejecutar el comando ```su``` (necesario haberlo creado previamente).
 7. Ejecutar el comando ```cd /opt/plcnext/``` y luego ```./nodescript.sh```. 
