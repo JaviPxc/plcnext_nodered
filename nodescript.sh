@@ -601,6 +601,30 @@ nodered_autoboot_initd_script() {
 #######################################################################################################################
 #######################################################################################################################
 
+execute_nodered() {
+	echo -e "\nTo execute Nodered you have two options:"
+	echo -e "    1. Not reboot and execute the comand '/etc/init.d/start_nodered start'. After restart Nodered will be executed automatically."
+	echo -e "    2. Reboot now. After restart Nodered will be executed automatically."
+	# Execute this logic before start script execution
+	read -r -p "Do you want to reboot now (y/n)" response
+	if ! [[ $response =~ ^(yes|y| ) ]] || [[ -z $response ]]; then
+		exit -1
+	fi
+	
+	echo "- Trying to execute /etc/init.d/start_nodered start, please wait..."
+	/etc/init.d/start_nodered start &>> ${NODE_INSTALLATION_LOGS_BASE_DIR}/nodered_installation.log
+	if [ $? -ne 0 ]; then
+		echo -e "    ${RED}${CROSS} '/etc/init.d/start_nodered start' not executed. ${ENDCOLOR}"
+		echo -e "    Check the log in ${NODE_INSTALLATION_LOGS_BASE_DIR}/"
+		exit -1
+	fi
+	
+	echo -e "    ${GREEN}${CHECK} '/etc/init.d/start_nodered start' executed successfully and Nodered is running.${ENDCOLOR}"
+}
+
+#######################################################################################################################
+#######################################################################################################################
+
 # Main program
 nargs=$#
 
@@ -635,6 +659,7 @@ case $# in
 						install_nodered_basic
 						nodered_autoboot_initd_script
 						show_end_message
+						execute_nodered
 					;;
 					1) #PLCnext No SD card + Node 16.1.0
 						show_terms_and_conditions
@@ -642,6 +667,7 @@ case $# in
 						install_nodered_basic
 						nodered_autoboot_initd_script
 						show_end_message
+						execute_nodered
 					;;
 					*)
 						show_usage_menu
@@ -657,6 +683,7 @@ case $# in
 						install__nodered_full
 						nodered_autoboot_initd_script
 						show_end_message
+						execute_nodered
 					;;
 					1) #PLCnext & SD card + Node 16.1.0
 						show_terms_and_conditions
@@ -665,6 +692,7 @@ case $# in
 						install__nodered_full
 						nodered_autoboot_initd_script
 						show_end_message
+						execute_nodered
 					;;
 					*)
 						show_usage_menu
