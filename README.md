@@ -46,11 +46,11 @@ instalación debido a posibles nuevas dependecias de ciertas librerías.
 8. Cambiar al usuario root. Para ello, ejecutar el comando ```su``` (necesario haberlo creado previamente).
 9. Ejecutar el comando ```cd /opt/plcnext/``` y luego ```./nodescript.sh```. 
 10. El script mostrará un menú con las distintas opciones. Pasar los parámetros adecuados en función de la instalación a realizar.
-   - Por ejemplo: ```./opt/plcnext/nodescript.sh 1 1``` para instalar una versión específica en un PLCnext con tarjeta SD.
+   - Por ejemplo: ```cd /opt/plcnext/``` y luego ```./nodescript.sh 1 1``` para instalar una versión específica en un PLCnext con tarjeta SD.
 11. El proceso de instalación es prácticamente automático al 100%. Fijarse en los mensajes que se van imprimiendo por pantalla para ver si todo se ha instalado correctamente o ver donde consultar el error que ha sucedido.
 
 
-## INSTALACION LIBRERIA 'LIBATOMIC' REQUERIDA POR npm
+## INSTALACION LIBRERIA 'LIBATOMIC' (SOLO NECESARIA SI FALLA EL PROCESO DE INSTALACIÓN)
 1. Haber descargado el contenido del repositorio (punto anterior).
 2. Conectarse al PLCnext por SFTP (por ejemplo, con WinSCP).
 3. Copiar los ficheros _nodescript.sh_ y _libatomic.zip_ a _/opt/plcnext/_
@@ -61,11 +61,11 @@ instalación debido a posibles nuevas dependecias de ciertas librerías.
 6. Cambiar al usuario root. Para ello, ejecutar el comando ```su``` (necesario haberlo creado previamente).
 7. Ejecutar el comando ```cd /opt/plcnext/``` y luego ```./nodescript.sh```. 
 8. El script mostrará un menú con las distintas opciones. Pasar los parámetros adecuados en función de la instalación a realizar.
-   - Por ejemplo: ```./opt/plcnext/nodescript.sh 2``` para instalar la librería libatomic.
+   - Por ejemplo: ```cd /opt/plcnext/``` y luego ```./nodescript.sh 2``` para instalar la librería libatomic.
 9. El proceso de instalación es prácticamente automático al 100%. Fijarse en los mensajes que se van imprimiendo por pantalla para ver si todo se ha instalado correctamente o ver donde consultar el error que ha sucedido.
 
 
-## GENERAR CERFITICADO PARA NODE OPCUA
+## GENERAR CERFITICADO PARA NODE OPCUA (SOLO NECESARIO SI OPCUA NO FUNCIONA EN NODERED)
 1. Haber descargado el contenido del repositorio (punto anterior).
 2. Conectarse al PLCnext por SFTP (por ejemplo, con WinSCP).
 3. Copiar el fichero _nodescript.sh_ a _/opt/plcnext/_
@@ -76,7 +76,7 @@ instalación debido a posibles nuevas dependecias de ciertas librerías.
 6. Cambiar al usuario root. Para ello, ejecutar el comando ```su``` (necesario haberlo creado previamente).
 7. Ejecutar el comando ```cd /opt/plcnext/``` y luego ```./nodescript.sh```. 
 8. El script mostrará un menú con las distintas opciones. Pasar los parámetros adecuados en función de la instalación a realizar.
-   - Por ejemplo: ```./opt/plcnext/nodescript.sh 3``` para generar un nuevo certificado.
+   - Por ejemplo: ```cd /opt/plcnext/``` y luego ```./nodescript.sh 3``` para generar un nuevo certificado.
    - Seguir las instrucciones solicitadas en pantalla para generar el certificado.
    - Una vez generado moverlo al directorio deseado.
 9. El proceso de instalación es prácticamente automático al 100%. Fijarse en los mensajes que se van imprimiendo por pantalla para ver si todo se ha instalado correctamente o ver donde consultar el error que ha sucedido.
