@@ -11,7 +11,7 @@
 2. Descomprimir el fichero zip descargado.
 3. El script principal es __nodescript.sh__. Básicamente permite diferenciar entre una instalación de Nodered para:
    * PLCnext con o sin tarjeta SD.
-   * Descarga de la última versión de Nodejs o de una versión concreta dada por el usuario. 
+   * Descargar automáticamente la última versión de Nodejs o instalar una versión concreta dada por el usuario. 
 4. En función del tipo de instalación que desee realizar, deberá seguir los pasos correspondientes descritos a continuación.
 
 
