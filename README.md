@@ -9,13 +9,13 @@
 # DESCARGA Y USO
 1. Descargar los ficheros del repositorio al PC. Disponibles en: https://github.com/JaviPxc/plcnext_nodered/archive/refs/heads/main.zip
 2. Descomprimir el fichero zip descargado.
-3. El script principal es __nodescript.sh__. Básicamente permite diferenciar entre una instalación de Nodered para:
-   * PLCnext con o sin tarjeta SD.
+3. El script principal es __nodescript.sh__, el cual permite hacer los siguientes tipos de instalación de Nodered:
+   * Sobre un PLCnext con o sin tarjeta SD.
    * Descargar automáticamente la última versión de Nodejs o instalar una versión concreta dada por el usuario. 
 4. En función del tipo de instalación que desee realizar, deberá seguir los pasos correspondientes descritos a continuación.
 
 
-## INSTALACION ULTIMA VERSION NODEJS
+## OP.1: INSTALACION ULTIMA VERSION NODEJS
 OJO!: Instalar la última versión puede conllevar errores no controlados en el procedimiento de 
 instalación debido a posibles nuevas dependecias de ciertas librerías.
 
@@ -33,7 +33,7 @@ instalación debido a posibles nuevas dependecias de ciertas librerías.
 9. El proceso de instalación es prácticamente automático al 100%. Fijarse en los mensajes que se van imprimiendo por pantalla para ver si todo se ha instalado correctamente o ver donde consultar el error que ha sucedido.
 
 
-## INSTALACION VERSION NODEJS ESPECIFICA
+## OP.2: INSTALACION VERSION NODEJS ESPECIFICA
 1. Haber descargado el contenido del repositorio (punto anterior).
 2. Conectarse al PLCnext por SFTP (por ejemplo, con WinSCP).
 3. Copiar los ficheros _nodescript.sh_ y _start_nodered_ a _/opt/plcnext/_
@@ -49,8 +49,8 @@ instalación debido a posibles nuevas dependecias de ciertas librerías.
    - Por ejemplo: ```cd /opt/plcnext/``` y luego ```./nodescript.sh 1 1``` para instalar una versión específica en un PLCnext con tarjeta SD.
 11. El proceso de instalación es prácticamente automático al 100%. Fijarse en los mensajes que se van imprimiendo por pantalla para ver si todo se ha instalado correctamente o ver donde consultar el error que ha sucedido.
 
-
-## INSTALACION LIBRERIA 'LIBATOMIC' (SOLO NECESARIA SI FALLA EL PROCESO DE INSTALACIÓN)
+## OP.3: OTROS PAQUETES INSTALABLES DESDE EL SCRIPT
+### INSTALACION LIBRERIA 'LIBATOMIC' (SOLO NECESARIA SI FALLA EL PROCESO DE INSTALACIÓN)
 1. Haber descargado el contenido del repositorio (punto anterior).
 2. Conectarse al PLCnext por SFTP (por ejemplo, con WinSCP).
 3. Copiar los ficheros _nodescript.sh_ y _libatomic.zip_ a _/opt/plcnext/_
@@ -65,7 +65,7 @@ instalación debido a posibles nuevas dependecias de ciertas librerías.
 9. El proceso de instalación es prácticamente automático al 100%. Fijarse en los mensajes que se van imprimiendo por pantalla para ver si todo se ha instalado correctamente o ver donde consultar el error que ha sucedido.
 
 
-## GENERAR CERFITICADO PARA NODE OPCUA (SOLO NECESARIO SI OPCUA NO FUNCIONA EN NODERED)
+### GENERAR CERFITICADO PARA NODE OPCUA (SOLO NECESARIO SI NO HAY CERTIFICADO OPCUA EN NODERED)
 1. Haber descargado el contenido del repositorio (punto anterior).
 2. Conectarse al PLCnext por SFTP (por ejemplo, con WinSCP).
 3. Copiar el fichero _nodescript.sh_ a _/opt/plcnext/_
