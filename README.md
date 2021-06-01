@@ -29,7 +29,7 @@ instalación debido a posibles nuevas dependecias de ciertas librerías.
 6. Cambiar al usuario root. Para ello, ejecutar el comando ```su``` (necesario haberlo creado previamente).
 7. Ejecutar el comando ```cd /opt/plcnext/``` y luego ```./nodescript.sh```. 
 8. El script mostrará un menú con las distintas opciones. Pasar los parámetros adecuados en función de la instalación a realizar.
-   - Por ejemplo: ```./opt/plcnext/nodescript.sh 1 0``` para instalar la última versión en un PLCnext con tarjeta SD.
+   - Por ejemplo: ```cd /opt/plcnext/``` y luego ```./nodescript.sh 1 0``` para instalar la última versión en un PLCnext con tarjeta SD.
 9. El proceso de instalación es prácticamente automático al 100%. Fijarse en los mensajes que se van imprimiendo por pantalla para ver si todo se ha instalado correctamente o ver donde consultar el error que ha sucedido.
 
 
