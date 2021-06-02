@@ -4,6 +4,7 @@
 2. Tener instalado en el PC un __cliente SSH__. Por ejemplo, [Putty](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html).
 3. Tener el __PLCnext conectado a internet__.
 4. Haber creado en el __PLCnext un usuario root__. [Setting_a_root_user_password](https://www.plcnext.help/te/Operating_System/Root_rights.htm#Setting_a_root_user_password)
+5. Tener el PLC en hora.
 
 
 # DESCARGA Y USO
