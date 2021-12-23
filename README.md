@@ -4,7 +4,7 @@
 2. Tener instalado en el PC un __cliente SSH__. Por ejemplo, [Putty](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html).
 3. Tener el [__PLCnext conectado a internet__](https://github.com/JaviPxc/plcnext_nodered#comprobar-que-plcnext-este-conectado-a-internet).
 4. Haber creado en el __PLCnext un usuario root__. [Setting_a_root_user_password](https://www.plcnext.help/te/Operating_System/Root_rights.htm#Setting_a_root_user_password)
-5. Tener el [__PLC sincronizado en hora__](https://github.com/JaviPxc/plcnext_nodered#sincronizacion-del-reloj-del-plcnext-por-ntp).
+5. Tener el [__PLC sincronizado en hora__](https://github.com/JaviPxc/plcnext_nodered#sincronizar-el-reloj-del-plcnext-por-ntp).
 
 
 # DESCARGA Y USO
@@ -22,7 +22,7 @@
   3.1. Ejecutar el comando ```ip a s dev eth0``` para comprobar la configuración de IPs del PLCnext.
   3.2. Ejecutar el comando ```ip r``` para comprobar la puerta de enlace (gateway) del PLCnext.
 
-## SINCRONIZACIÓN DEL RELOJ DEL PLCnext POR NTP
+## SINCRONIZAR EL RELOJ DEL PLCnext POR NTP
 1. Haber descargado el contenido del repositorio (punto anterior).
 2. Conectarse al PLCnext por SFTP (por ejemplo, con WinSCP).
 3. Copiar el fichero _ntp.conf_ a _/opt/plcnext/_.
