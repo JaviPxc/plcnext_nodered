@@ -2,9 +2,9 @@
 # PASOS PREVIOS
 1. Tener instalado en el PC un __cliente SFTP__. Por ejemplo, [WinSCP](https://winscp.net/eng/download.php).
 2. Tener instalado en el PC un __cliente SSH__. Por ejemplo, [Putty](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html).
-3. Tener el __PLCnext conectado a internet__.
+3. Tener el [__PLCnext conectado a internet__](https://github.com/JaviPxc/plcnext_nodered#comprobar-que-plcnext-este-conectado-a-internet).
 4. Haber creado en el __PLCnext un usuario root__. [Setting_a_root_user_password](https://www.plcnext.help/te/Operating_System/Root_rights.htm#Setting_a_root_user_password)
-5. Tener el PLC en hora.
+5. Tener el [__PLC sincronizado en hora__](https://github.com/JaviPxc/plcnext_nodered#sincronizacion-del-reloj-del-plcnext-por-ntp).
 
 
 # DESCARGA Y USO
@@ -15,6 +15,23 @@
    * Descargar automáticamente la última versión de Nodejs o instalar una versión concreta dada por el usuario. 
 4. En función del tipo de instalación que desee realizar, deberá seguir los pasos correspondientes descritos a continuación.
 
+## COMPROBAR QUE PLCnext ESTE CONECTADO A INTERNET
+1. Conectarse al PLCnext por SSH como admin (por ejemplo, con Putty).
+2. Ejecutar el comando ```ping -c4 www.google.com```. Si responde al ping, el PLC tiene salida a internet.
+3. Si no hay conexión a internet, comprobar:
+  3.1. Ejecutar el comando ```ip a s dev eth0``` para comprobar la configuración de IPs del PLCnext.
+  3.2. Ejecutar el comando ```ip r``` para comprobar la puerta de enlace (gateway) del PLCnext.
+
+## SINCRONIZACIÓN DEL RELOJ DEL PLCnext POR NTP
+1. Haber descargado el contenido del repositorio (punto anterior).
+2. Conectarse al PLCnext por SFTP (por ejemplo, con WinSCP).
+3. Copiar el fichero _ntp.conf_ a _/opt/plcnext/_.
+4. Conectarse al PLCnext por SSH como admin (por ejemplo, con Putty).
+5. Cambiar al usuario root. Para ello, ejecutar el comando ```su``` (necesario haberlo creado previamente).
+6. Ejecutar el comando ```mv /opt/plcnext/ntp.conf /etc/ntp.conf```.
+7. Ejecutar el comando ```/etc/init.d/ntpd restart``` para reiniciar el servicio ntp.
+8. Ejecutar el comando ```ntpq -p``` para ver la lista de servidores NTP con los que conecta el equipo. En cuanto esté sincronizado con un servidor, este aparecerá con un asterisco "*" delante. Para poder conectar estos servidores, el PLCnext debe tener acceso a internet.
+9. Ejecutar el comando ```date``` para ver la fecha del equipo.
 
 ## OP.1: INSTALACION ULTIMA VERSION NODEJS
 OJO!: Instalar la última versión puede conllevar errores no controlados en el procedimiento de 
